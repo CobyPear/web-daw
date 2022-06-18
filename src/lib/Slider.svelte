@@ -1,7 +1,7 @@
 <script lang="ts">
   import { sliderStore } from './store';
 
-  let amplitude = 75;
+  let amplitude = 0.75;
   let lastAmplitude: number;
   export let track: string;
 
@@ -57,7 +57,8 @@
   class="-rotate-90"
   type="range"
   min="0"
-  max="100"
+  max="1"
+  step="0.1"
   bind:value={amplitude}
   on:change={() => {
     console.log(amplitude)

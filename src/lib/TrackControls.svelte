@@ -16,6 +16,7 @@
     const blob = new Blob(chunks, { type: 'audio/ogg; codec=opus' });
     audioURL = window.URL.createObjectURL(blob);
     audioUrlStore.set({
+      ...$audioUrlStore,
       [trackName]: audioURL,
     });
     chunks = [];
@@ -54,7 +55,7 @@
       console.log('getUserMedia not supported on your browser!');
     }
     isArmed = !isArmed;
-    if (!isArmed && $isRecording) {
+    if ((!isArmed && $isRecording) || (!isArmed && $isRecording && $isPaused)) {
       // call stop if we disarm while recording
       // to save the blob
       onStop();

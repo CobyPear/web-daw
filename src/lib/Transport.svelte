@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { isPaused, isPlaying, isRecording, isStopped } from './store';
+  import {
+    isLooping,
+    isPaused,
+    isPlaying,
+    isRecording,
+    isStopped,
+  } from './store';
   const meters = [1, 2, 4, 8, 16, 32];
   let chosenMeter = 4;
   let chosenBeats = 4;
@@ -100,6 +106,19 @@
       </svg>
     </button>
   </section>
+  <button>
+    Loop
+    <span
+      class="block text-4xl p-3 m-2 bg-stone-300 rounded-full w-fit hover:bg-stone-400 active:bg-stone-500 focus:bg-stone-600"
+      on:click={(e) => {
+        isLooping.set(!$isLooping)
+        if (e.target instanceof Element) {
+          e.target.classList.toggle('animate-spin');
+        }
+      }}>
+      ♻️
+    </span>
+  </button>
   <div class="flex">
     <form id="timeSignatureContainer" class="flex flex-col w-fit">
       <span>Time Signature</span>
