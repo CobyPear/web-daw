@@ -1,45 +1,97 @@
 <script>
-  import { isPlayingStore } from './store';
+  import { isPaused, isPlaying, isRecording, isStopped } from './store';
   const meters = [1, 2, 4, 8, 16, 32];
   let chosenMeter = 4;
   let chosenBeats = 4;
   /**@type string*/
   let chosenTimeSignature;
-  const handlePlay = () => {
+  const handleRecord = () => {
     if (!chosenMeter || !chosenBeats) {
       return;
     }
     chosenTimeSignature = `${chosenBeats}/${chosenMeter}`;
-    isPlayingStore.set(!$isPlayingStore);
+    isRecording.set(!$isRecording);
+    isPaused.set($isPlaying);
+    isPlaying.set($isRecording);
+  };
+
+  isPlaying.subscribe((value) => {
+    isPaused.set(!value);
+  });
+  const handlePlayPause = () => {
+    // TODO: clean this up...
+    if (
+      (!$isPlaying && $isStopped) ||
+      (!$isPlaying && !$isStopped && $isPaused)
+    ) {
+      isPlaying.set(true);
+      isPaused.set(false);
+      isStopped.set(false);
+      return;
+    }
+    if (
+      ($isPlaying && $isRecording) ||
+      (!$isPaused && $isPlaying && !$isStopped)
+    ) {
+      isPlaying.set(false);
+      isPaused.set(true);
+      return;
+    }
+  };
+  // TODO: also reset the scrubber & time to 0
+  const handleStop = () => {
+    isStopped.set(true);
+    isRecording.set(false);
+    isPaused.set(true);
+    isPlaying.set(false);
   };
 </script>
 
-<section class="bg-green-500 p-5 mt-8 min-w-[20rem] min-h-[18rem]">
-  <button
-    id="play"
-    class="border-2 border-black rounded p-2"
-    on:click={handlePlay}>
-    {#if !$isPlayingStore}
-      <svg height="75" width="90">
-        <polygon
-          points="0,0 0,75 90,37.5"
-          class="fill-emerald-600 hover:fill-emerald-800" />
+<article class="bg-green-500 p-5 mt-8 min-w-[22rem] min-h-[18rem]">
+  <section class="flex flex-row">
+    <button
+      id="play"
+      class="border-2 border-black rounded p-2"
+      on:click={handlePlayPause}>
+      {#if !$isPlaying && $isPaused}
+        <svg height="75" width="90">
+          <polygon
+            points="0,0 0,75 90,37.5"
+            class="fill-emerald-600 hover:fill-emerald-800" />
+        </svg>
+      {:else if $isPlaying && (!$isPaused || !$isStopped)}
+        <svg height="75" width="90">
+          <g class="stroke-blue-500 hover:stroke-blue-400">
+            <line x1="30" x2="30" y1="0" y2="90" stroke-width="15" />
+            <line
+              x1="45"
+              x2="45"
+              y1="0"
+              y2="90"
+              stroke-width="15"
+              class="stroke-green-500" />
+            <line x1="60" x2="60" y1="0" y2="90" stroke-width="15" />
+          </g>
+        </svg>
+      {/if}
+    </button>
+    <button on:click={handleStop} class="border-2 border-black rounded p-2">
+      <svg height="75" width="75">
+        <rect height="75" width="75" class="fill-red-600 hover:fill-red-500" />
       </svg>
-    {:else}
-      <svg height="75" width="90">
-        <g class="stroke-blue-500 hover:stroke-blue-400">
-          <line x1="30" x2="30" y1="0" y2="90" stroke-width="15" />
-          <line x1="45" x2="45" y1="0" y2="90" stroke-width="15" class="stroke-green-500" />
-          <line x1="60" x2="60" y1="0" y2="90" stroke-width="15" />
-        </g>
+    </button>
+    <button on:click={handleRecord} class="border-2 border-black rounded p-2">
+      <svg height="75" width="75">
+        <circle
+          cx="37.5"
+          cy="37.5"
+          r="37.5"
+          class={`stroke-red-500 ${
+            $isRecording ? 'fill-red-800' : 'fill-red-600'
+          } hover:fill-red-500 active:fill-red-400`} />
       </svg>
-    {/if}
-  </button>
-  <button class="border-2 border-black rounded p-2">
-    <svg height="75" width="75">
-      <rect height="75" width="75" class="fill-red-600 hover:fill-red-500" />
-    </svg>
-  </button>
+    </button>
+  </section>
   <div class="flex">
     <form id="timeSignatureContainer" class="flex flex-col w-fit">
       <span>Time Signature</span>
@@ -71,6 +123,6 @@
       {chosenTimeSignature ? chosenTimeSignature : ''}
     </div>
   </div>
-</section>
+</article>
 
 <style></style>

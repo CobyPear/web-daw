@@ -6,7 +6,7 @@
 </script>
 
 <main>
-  <section class="flex flex-row w-[100vw] h-[30vw] mt-8">
+  <section class="flex flex-row w-[100vw] h-[50] mt-2">
     <TrackBay />
     <RecordingBay />
   </section>
