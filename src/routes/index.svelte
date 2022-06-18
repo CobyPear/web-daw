@@ -6,10 +6,12 @@
 </script>
 
 <main>
-  <section class="flex flex-row w-[100vw] h-[30vw] mt-12">
+  <section class="flex flex-row w-[100vw] h-[30vw] mt-8">
     <TrackBay />
     <RecordingBay />
   </section>
-  <Transport />
-  <SliderBay />
+  <section class="flex flex-row w-[100vw]">
+    <Transport />
+    <SliderBay />
+  </section>
 </main>
