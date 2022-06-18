@@ -1,10 +1,9 @@
-<script>
+<script lang="ts">
   import { isPaused, isPlaying, isRecording, isStopped } from './store';
   const meters = [1, 2, 4, 8, 16, 32];
   let chosenMeter = 4;
   let chosenBeats = 4;
-  /**@type string*/
-  let chosenTimeSignature;
+  let chosenTimeSignature: string;
   const handleRecord = () => {
     if (!chosenMeter || !chosenBeats) {
       return;
@@ -13,6 +12,7 @@
     isRecording.set(!$isRecording);
     isPaused.set($isPlaying);
     isPlaying.set($isRecording);
+    isStopped.set(false);
   };
 
   isPlaying.subscribe((value) => {
@@ -45,6 +45,14 @@
     isPaused.set(true);
     isPlaying.set(false);
   };
+
+  // debug
+  // $: {
+  //   console.log('isStopped', $isStopped);
+  //   console.log('isRecording', $isRecording);
+  //   console.log('isPlaying', $isPlaying);
+  //   console.log('isPaused', $isPaused);
+  // }
 </script>
 
 <article class="bg-green-500 p-5 mt-8 min-w-[22rem] min-h-[18rem]">
@@ -124,5 +132,3 @@
     </div>
   </div>
 </article>
-
-<style></style>

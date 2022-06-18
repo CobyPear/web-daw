@@ -1,9 +1,9 @@
 <script>
-  import Track from './Track.svelte';
+  import TrackControls from './TrackControls.svelte';
 </script>
-<article class="bg-yellow-500 w-[25vw]">
-  <Track title={'track1'} />
-  <Track title={'track2'}/>
-  <Track title={'track3'}/>
-  <Track title={'track4'} />
+<article class="flex flex-col bg-yellow-500 w-[25vw]">
+  <TrackControls trackName={'track1'} />
+  <TrackControls trackName={'track2'}/>
+  <TrackControls trackName={'track3'}/>
+  <TrackControls trackName={'track4'} />
 </article>

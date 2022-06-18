@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { sliderStore } from './store';
+
   let amplitude = 75;
   let lastAmplitude: number;
   export let track: string;
@@ -9,12 +11,37 @@
       if (currentState === '🔊') {
         lastAmplitude = amplitude;
         amplitude = 0;
+        sliderStore.set({
+          ...$sliderStore,
+          [track]: {
+            lastAmplitude: lastAmplitude,
+            amplitude: amplitude,
+          },
+        });
       } else {
         amplitude = lastAmplitude;
+        sliderStore.set({
+          ...$sliderStore,
+          [track]: {
+            lastAmplitude: lastAmplitude,
+            amplitude: amplitude,
+          },
+        });
       }
       e.target.innerHTML = currentState === '🔇' ? '🔊' : '🔇';
     }
   };
+  // $: {
+  //   console.log(
+  //     sliderStore.set({
+  //       ...$sliderStore,
+  //       [track]: {
+  //         ...$sliderStore[track],
+  //         amplitude,
+  //       },
+  //     }),
+  //   );
+  // }
 </script>
 
 <!-- slider -->
@@ -31,4 +58,14 @@
   type="range"
   min="0"
   max="100"
-  bind:value={amplitude} />
+  bind:value={amplitude}
+  on:change={() => {
+    console.log(amplitude)
+    sliderStore.set({
+      ...$sliderStore,
+      [track]: {
+        ...$sliderStore[track],
+        amplitude,
+      },
+    });
+  }} />
