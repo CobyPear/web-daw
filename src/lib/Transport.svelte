@@ -61,64 +61,68 @@
   // }
 </script>
 
-<article class="bg-green-500 p-5 mt-8 min-w-[22rem] min-h-[18rem]">
-  <section class="flex flex-row">
+<article class="bg-green-500 p-5 mx-auto md:mx-0 min-w-[26rem] max-w-fit min-h-[18rem]">
+  <section class="flex md:flex-row justify-between ">
     <button
       id="play"
-      class="border-2 border-black rounded p-2"
+      class="border-2 border-black rounded p-2 max-w-fit"
       on:click={handlePlayPause}>
       {#if !$isPlaying && $isPaused}
-        <svg height="75" width="90">
+        <svg height="75" width="75">
           <polygon
-            points="0,0 0,75 90,37.5"
-            class="fill-emerald-600 hover:fill-emerald-800" />
+            points="0,0 0,75 75,37.5"
+            class="fill-emerald-600 hover:fill-emerald-500 active:fill-emerald-400 focus:fill-emerald-300" />
         </svg>
       {:else if $isPlaying && (!$isPaused || !$isStopped)}
-        <svg height="75" width="90">
-          <g class="stroke-blue-500 hover:stroke-blue-400">
-            <line x1="30" x2="30" y1="0" y2="90" stroke-width="15" />
+        <svg height="75" width="75">
+          <g class="stroke-blue-500 hover:stroke-blue-400 active:stroke-blue-300 focus:stroke-blue-200">
+            <line x1="20" x2="20" y1="0" y2="75" stroke-width="20" />
             <line
-              x1="45"
-              x2="45"
+              x1="37.5"
+              x2="37.5"
               y1="0"
-              y2="90"
+              y2="75"
               stroke-width="15"
               class="stroke-green-500" />
-            <line x1="60" x2="60" y1="0" y2="90" stroke-width="15" />
+            <line x1="55" x2="55" y1="0" y2="75" stroke-width="20" />
           </g>
         </svg>
       {/if}
     </button>
-    <button on:click={handleStop} class="border-2 border-black rounded p-2">
+    <button
+      on:click={handleStop}
+      class="border-2 border-black rounded p-2 max-w-fit">
       <svg height="75" width="75">
-        <rect height="75" width="75" class="fill-red-600 hover:fill-red-500" />
+        <rect height="75" width="75" class="fill-red-600 hover:fill-red-500 active:fill-red-400 focus:fill-red-300" />
       </svg>
     </button>
-    <button on:click={handleRecord} class="border-2 border-black rounded p-2">
+    <button
+      on:click={handleRecord}
+      class="border-2 border-black rounded p-2 max-w-fit">
       <svg height="75" width="75">
         <circle
           cx="37.5"
           cy="37.5"
-          r="37.5"
-          class={`stroke-red-500 ${
-            $isRecording ? 'fill-red-800' : 'fill-red-600'
+          r="36"
+          class={`${
+            $isRecording ? 'fill-red-200' : 'fill-red-600'
           } hover:fill-red-500 active:fill-red-400`} />
       </svg>
     </button>
+    <button>
+      Loop
+      <span
+        class="block text-4xl p-3 m-2 bg-stone-300 rounded-full w-fit hover:bg-stone-400 active:bg-stone-500 focus:bg-stone-600"
+        on:click={(e) => {
+          isLooping.set(!$isLooping);
+          if (e.target instanceof Element) {
+            e.target.classList.toggle('animate-spin');
+          }
+        }}>
+        ♻️
+      </span>
+    </button>
   </section>
-  <button>
-    Loop
-    <span
-      class="block text-4xl p-3 m-2 bg-stone-300 rounded-full w-fit hover:bg-stone-400 active:bg-stone-500 focus:bg-stone-600"
-      on:click={(e) => {
-        isLooping.set(!$isLooping)
-        if (e.target instanceof Element) {
-          e.target.classList.toggle('animate-spin');
-        }
-      }}>
-      ♻️
-    </span>
-  </button>
   <div class="flex">
     <form id="timeSignatureContainer" class="flex flex-col w-fit">
       <span>Time Signature</span>

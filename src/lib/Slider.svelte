@@ -31,17 +31,6 @@
       e.target.innerHTML = currentState === '🔇' ? '🔊' : '🔇';
     }
   };
-  // $: {
-  //   console.log(
-  //     sliderStore.set({
-  //       ...$sliderStore,
-  //       [track]: {
-  //         ...$sliderStore[track],
-  //         amplitude,
-  //       },
-  //     }),
-  //   );
-  // }
 </script>
 
 <!-- slider -->
@@ -54,11 +43,11 @@
 </div>
 <input
   id="slider"
-  class="-rotate-90"
+  class="-rotate-90 m-0 translate-y-24  h-[.25em] w-[10em] flex shrink"
   type="range"
   min="0"
   max="1"
-  step="0.1"
+  step="0.01"
   bind:value={amplitude}
   on:change={() => {
     console.log(amplitude)

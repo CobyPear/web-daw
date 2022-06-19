@@ -1,5 +1,10 @@
 <script lang="ts">
   import {
+    update_await_block_branch,
+    validate_each_argument,
+  } from 'svelte/internal';
+
+  import {
     isPaused,
     isPlaying,
     isRecording,
@@ -87,35 +92,30 @@
     }
   });
   isRecording.subscribe((value) => {
-    if (value && track) {
+    if (value && track && isArmed) {
       if (track.state === 'inactive' || (track.state === 'paused' && isArmed)) {
         console.log('starting recording...');
         track.start();
       }
     }
   });
-
-  // // start the track if it's armed and 'play' on the transport is hit
-  // $: track && $isStopped && isArmed && track.start();
-  // // pause the track if it's armed and 'pause' on the transport is hit and we are recording
-  // $: track &&
-  //   track.state === 'recording' &&
-  //   $isPlaying &&
-  //   isArmed &&
-  //   track.pause();
-  // // stop the track if it's armed and 'stop' on the transport is hit and we are recording
-  // $: track &&
-  //   ($isPlaying || $isPaused) &&
-  //   isArmed &&
-  //   (track.state === 'recording' || track.state === 'paused') &&
-  //   track.stop();
-
-  $: console.log(track?.state);
 </script>
 
-<button class="p-2 my-2" on:click={armTrack}>
-  <span>
-    {trackName}
-  </span>
-  {isArmed ? '🔴' : '🔵'}
-</button>
+<section>
+  <button class="p-2 my-2" on:click={armTrack}>
+    <span>
+      {trackName}
+    </span>
+    {isArmed ? '🔴' : '🔵'}
+  </button>
+  <button
+    on:click={() => {
+      if ($audioUrlStore[trackName]) {
+        const answer = confirm('Are you sure you want to delete this?');
+        if (answer) {
+          delete $audioUrlStore[trackName];
+          audioUrlStore.set($audioUrlStore);
+        }
+      }
+    }}>❌</button>
+</section>

@@ -5,12 +5,12 @@
   import SliderBay from '$lib/SliderBay.svelte';
 </script>
 
-<main>
-  <section class="flex flex-row w-[100vw] h-[50] mt-2">
+<main class="w-[100vw]">
+  <section class="flex flex-row mt-8 overflow-x-scroll">
     <TrackBay />
     <RecordingBay />
   </section>
-  <section class="flex flex-row w-[100vw]">
+  <section class="flex flex-col md:flex-row">
     <Transport />
     <SliderBay />
   </section>

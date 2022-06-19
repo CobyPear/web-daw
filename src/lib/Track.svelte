@@ -51,3 +51,4 @@
   on:ended={() => {
     isPlaying.set(false);
   }} />
+<canvas />
