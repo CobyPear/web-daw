@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { SliderStore, IndexableStore, AudioStore } from 'src/types';
 
 export const isRecording = writable(false)
 export const isPlaying = writable(false)
@@ -6,12 +7,5 @@ export const isPaused = writable(false)
 export const isStopped = writable(true)
 export const isLooping = writable(false)
 
-type IndexableStore<T> = {
-  [key: string]: T
-}
-interface SliderStore {
-  amplitude: number,
-  lastAmplitude: number
-}
-export const audioUrlStore = writable<IndexableStore<string>>({})
+export const audioStore = writable<IndexableStore<AudioStore>>({})
 export const sliderStore = writable<IndexableStore<SliderStore>>({})

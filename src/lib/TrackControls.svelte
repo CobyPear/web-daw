@@ -1,15 +1,10 @@
 <script lang="ts">
   import {
-    update_await_block_branch,
-    validate_each_argument,
-  } from 'svelte/internal';
-
-  import {
     isPaused,
     isPlaying,
     isRecording,
     isStopped,
-    audioUrlStore,
+    audioStore,
   } from './store';
   export let trackName: string;
   let audioURL: string;
@@ -20,9 +15,12 @@
   const onStop = () => {
     const blob = new Blob(chunks, { type: 'audio/ogg; codec=opus' });
     audioURL = window.URL.createObjectURL(blob);
-    audioUrlStore.set({
-      ...$audioUrlStore,
-      [trackName]: audioURL,
+    audioStore.set({
+      ...$audioStore,
+      [trackName]: {
+        ...$audioStore[trackName],
+        url: audioURL,
+      },
     });
     chunks = [];
   };
@@ -48,9 +46,16 @@
           track.onpause = onPause;
           // track.onresume =
           track.ondataavailable = function (e) {
-            console.log('data is avail', e);
+            console.log('data is availlable. pushing data to chunks array...');
             chunks.push(e.data);
           };
+          audioStore.set({
+            ...$audioStore,
+            [trackName]: {
+              ...$audioStore[trackName],
+              stream: stream
+            },
+          });
         })
         // Error callback
         .catch(function (err) {
@@ -110,11 +115,12 @@
   </button>
   <button
     on:click={() => {
-      if ($audioUrlStore[trackName]) {
+      if ($audioStore[trackName]) {
         const answer = confirm('Are you sure you want to delete this?');
         if (answer) {
-          delete $audioUrlStore[trackName];
-          audioUrlStore.set($audioUrlStore);
+          delete $audioStore[trackName];
+          audioStore.set($audioStore);
+          console.log($audioStore)
         }
       }
     }}>❌</button>

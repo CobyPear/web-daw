@@ -36,7 +36,7 @@
   });
 </script>
 
-<article class="bg-red-500 w-[100vw]">
+<article class="w-[100vw]">
   <!-- timer strip -->
   <section class="absolute top-0">
     <span>{minutes}:{seconds}:{miliseconds}</span>
