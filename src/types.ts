@@ -5,11 +5,19 @@ export type IndexableStore<T> = {
 }
 
 export interface AudioStore {
-  stream: MediaStream,
-  url: string
+  track: MediaRecorder,
+  url: string,
 }
 
 export interface SliderStore {
   amplitude: number,
   lastAmplitude: number
+}
+
+export interface VizualizerStore {
+  source: MediaStreamAudioSourceNode,
+  analyser: AnalyserNode,
+  audioCtx: AudioContext,
+  bufferLength: number,
+  dataArray: Uint8Array,
 }

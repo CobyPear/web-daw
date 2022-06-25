@@ -12,7 +12,7 @@
   let chosenTimeSignature: string;
   const handleRecord = () => {
     if (!chosenMeter || !chosenBeats) {
-      return;
+      // TODO: error handlingreturn;
     }
     chosenTimeSignature = `${chosenBeats}/${chosenMeter}`;
     isRecording.set(!$isRecording);

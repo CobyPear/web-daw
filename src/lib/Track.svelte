@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { beforeUpdate, onMount } from 'svelte';
-  import TrackVisualizer from './TrackVisualizer.svelte';
+  import { browser } from '$app/env';
+
+  import { onDestroy } from 'svelte';
+
   import {
     audioStore,
     isPlaying,
@@ -9,11 +11,10 @@
     isStopped,
     isLooping,
     sliderStore,
+    vizualizerStore,
   } from './store';
   export let trackName: string;
   let canvas: HTMLCanvasElement;
-  let frame: number
-
   let audioURL: string;
   let isMuted: boolean;
   let amplitude: number;
@@ -51,29 +52,35 @@
     }
   });
 
-  function visualize(canvas: HTMLCanvasElement, stream: MediaStream) {
-      // if (!canvas || !stream) return;
-      const audioCtx = new AudioContext();
+  let drawVisual: number;
+  $: if ($audioStore[trackName] && 'track' in $audioStore[trackName]) {
+    console.log('Starting Vizualizer...');
+    vizualiser(canvas, $audioStore[trackName].track.stream);
+    function vizualiser(canvas: HTMLCanvasElement, stream: MediaStream) {
+      if (!canvas || !stream) {
+        return;
+      }
+      // TODO: Needs cleanup. If we are recording, vizualize incoming sound.
+      // otherwise vizualse recorded sound, but only when it is playing.
+      let WIDTH = canvas.width;
+      let HEIGHT = canvas.height;
+      const { source, analyser, audioCtx, dataArray, bufferLength } =
+        $vizualizerStore[trackName];
       const canvasCtx = canvas.getContext('2d');
-
-      const source = audioCtx.createMediaStreamSource(stream);
-
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 2048;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-
       source.connect(analyser);
-
-      function draw() {
-        if (!canvasCtx) return;
-        console.log('DRAWING');
-        const WIDTH = canvas.width;
-        const HEIGHT = canvas.height;
+      analyser.connect(audioCtx.destination);
+      if (!canvasCtx) {
+        return;
+      }
+      canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+      const draw = function () {
+        console.log('Drawing...');
+        drawVisual = requestAnimationFrame(draw);
 
         analyser.getByteTimeDomainData(dataArray);
 
-        canvasCtx.fillStyle = 'rgb(180, 180, 180)';
+        canvasCtx.fillStyle = 'rgb(200, 200, 200)';
         canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
         canvasCtx.lineWidth = 2;
@@ -81,12 +88,12 @@
 
         canvasCtx.beginPath();
 
-        const sliceWidth = (WIDTH * 1.0) / bufferLength;
-        let x = 0;
+        var sliceWidth = (WIDTH * 1.0) / bufferLength;
+        var x = 0;
 
-        for (let i = 0; i < bufferLength; i++) {
-          const v = (dataArray[i] ?? 0) / 128.0;
-          const y = (v * HEIGHT) / 2;
+        for (var i = 0; i < bufferLength; i++) {
+          var v = dataArray[i] / 128.0;
+          var y = (v * HEIGHT) / 2;
 
           if (i === 0) {
             canvasCtx.moveTo(x, y);
@@ -99,18 +106,23 @@
 
         canvasCtx.lineTo(canvas.width, canvas.height / 2);
         canvasCtx.stroke();
-      }
+      };
 
-      return draw;
+      draw();
     }
+  }
+  $: if ($vizualizerStore[trackName]) {
+    if (!('source' in $vizualizerStore[trackName])){
+      console.log('Stopping Vizualizer...')
+      cancelAnimationFrame(drawVisual);
+    }
+  }
 
-    beforeUpdate(() => {
-      console.log("onPlay")
-      const draw = visualize(canvas, $audioStore[trackName].stream);
-      frame = window.requestAnimationFrame(draw);
-      return () => window.cancelAnimationFrame(frame);
-    })
-  
+  onDestroy(() => {
+    if (browser) {
+      return cancelAnimationFrame(drawVisual);
+    }
+  });
 </script>
 
 <audio
@@ -119,10 +131,9 @@
   muted={isMuted}
   loop={Boolean($isLooping)}
   bind:this={currentTrack}
-  on:play={() => {
-
- }}
+  on:play={() => {}}
   on:ended={() => {
     isPlaying.set(false);
+    return window.cancelAnimationFrame(drawVisual);
   }} />
 <canvas height="100" width="1000" bind:this={canvas} />
