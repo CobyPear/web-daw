@@ -20,4 +20,5 @@ export interface VizualizerStore {
   audioCtx: AudioContext,
   bufferLength: number,
   dataArray: Uint8Array,
+  stream: MediaStream | undefined
 }

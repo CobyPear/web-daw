@@ -7,24 +7,24 @@
     isStopped,
     audioStore,
     vizualizerStore,
+    updateStore
   } from './store';
   export let trackName: string;
   let audioURL: string;
   let isArmed = false;
   let track: MediaRecorder;
   let chunks: any = [];
-  let currentStream;
+  let currentStream: MediaStream;
 
-  function updateStore<T>(store: Writable<T>, { ...args }: T) {
-    store.set({
-      ...store,
-      ...args,
-    });
-  }
-
-  const onStop = () => {
+  const onStop = async () => {
     const blob = new Blob(chunks, { type: 'audio/ogg; codec=opus' });
     audioURL = window.URL.createObjectURL(blob);
+    // updateStore(vizualizerStore, {
+    //   [trackName]: {
+    //     ...$vizualizerStore[trackName],
+    //     stream: $vizualizerStore[trackName].source.mediaStream
+    //   },
+    // });
     updateStore(audioStore, {
       [trackName]: {
         ...$audioStore[trackName],
@@ -32,14 +32,13 @@
         track,
       },
     });
-    $vizualizerStore[trackName].source.disconnect();
+    $vizualizerStore[trackName].source?.disconnect();
 
     chunks = [];
   };
   const onPause = () => {
     console.log('pushing chunks...');
     chunks.push(track.requestData());
-    $vizualizerStore[trackName].source.disconnect();
   };
   const armTrack = () => {
     // Adapted from MDN docs and the following:
@@ -68,16 +67,17 @@
             //@ts-ignore
             audioCtx = new (AudioContext || webkitAudioContext)();
             analyser = audioCtx.createAnalyser();
-            source = audioCtx.createMediaStreamSource(stream);
+            // source = audioCtx.createMediaStreamSource(stream);
             const bufferLength = 2048;
             updateStore(vizualizerStore, {
               [trackName]: {
                 ...$vizualizerStore[trackName],
-                source,
+                // source,
                 analyser,
                 audioCtx,
                 bufferLength,
                 dataArray: new Uint8Array(bufferLength),
+                stream: currentStream,
               },
             });
           }
@@ -174,7 +174,7 @@
         if (answer) {
           delete $audioStore[trackName];
           audioStore.set($audioStore);
-          console.log($audioStore);
+          console.log('Track deleted');
         }
       }
     }}>
